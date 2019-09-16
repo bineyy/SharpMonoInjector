@@ -273,11 +273,11 @@ namespace SharpMonoInjector
             IntPtr result = Execute(Exports[mono_runtime_invoke],
                 method, IntPtr.Zero, IntPtr.Zero, excPtr);
 
-            IntPtr exc = (IntPtr)_memory.ReadInt(excPtr);
+            IntPtr exc = (IntPtr)(Is64Bit ? _memory.ReadLong(excPtr) : _memory.ReadInt(excPtr));
 
             if (exc != IntPtr.Zero) {
                 string className = GetClassName(exc);
-                string message = ReadMonoString((IntPtr)_memory.ReadInt(exc + (Is64Bit ? 0x20 : 0x10)));
+                string message = ReadMonoString((IntPtr)(Is64Bit ? _memory.ReadLong(exc + 0x18) : _memory.ReadInt(exc + 0x10)));
                 throw new InjectorException($"The managed method threw an exception: ({className}) {message}");
             }
         }
